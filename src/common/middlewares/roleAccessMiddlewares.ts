@@ -2,7 +2,7 @@ import * as Boom from "@hapi/boom";
 import * as Hapi from "@hapi/hapi";
 import { UserRole } from "../../database/migrations/20221005222240_app-migration";
 import { User } from "../../users/models/user.model";
-type HapiRequest = Hapi.Request & any;
+export type HapiRequest = Hapi.Request & any;
 
 const rolMiddleware = (req: HapiRequest, user: User, userRole: string) => {
   if (!user) {

@@ -15,7 +15,12 @@ export class UserRepository {
     return { ...rest };
   }
   async create(payload: UserEntity) {
-    return await this.knex.insert(payload).into(this.tableName);
+     const id = (await this.knex
+       .insert(payload)
+       .into(this.tableName)
+       .first()) as number;
+     return this.findOneWitoutPassword(id);
+
   }
 
   findByEmail(email: string) {

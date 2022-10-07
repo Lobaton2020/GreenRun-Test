@@ -11,6 +11,9 @@ export class AuthController {
   constructor(readonly userRepository: UserRepository) {}
   async registerAdmin(req: Hapi.Request) {
     const user: User = req.payload as User;
+    if(await this.userRepository.findByEmail(user.email)){
+      return Boom.badRequest("The email is areadly registered")
+    }
     user.role = UserRole.ADMIN;
     user.password = await bcrypt.hash(user.password, 15);
     return await this.userRepository.create(user);
@@ -18,6 +21,9 @@ export class AuthController {
 
   async registerUser(req: Hapi.Request) {
     const user: User = req.payload as User;
+    if(await this.userRepository.findByEmail(user.email)){
+      return Boom.badRequest("The email is areadly registered")
+    }
     user.role = UserRole.USER;
     user.password = await bcrypt.hash(user.password, 15);
     return await this.userRepository.create(user);

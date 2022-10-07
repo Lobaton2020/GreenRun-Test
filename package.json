@@ -8,7 +8,9 @@
     "start": "node ./dist/index.js",
     "build": "tsc",
     "knex:migration:create": "npm run build & knex --knexfile ./dist/src/database/knexfile.js migrate:make --",
-    "knex:migration:execute": "npm run build & knex --knexfile ./dist/src/database/knexfile.js migrate:latest"
+    "knex:migration:execute": "npm run build & knex --knexfile ./dist/src/database/knexfile.js migrate:latest",
+    "knex:migration:rollback": "npm run build & knex --knexfile ./dist/src/database/knexfile.js migrate:down",
+    "knex:seed:run": "npm run build & knex --knexfile ./dist/src/database/knexfile.js seed:run"
   },
   "keywords": [],
   "author": "",

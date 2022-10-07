@@ -41,6 +41,16 @@ const bootstrap = async function () {
         plugin: HapiSwagger,
         options: swaggerOptions,
       },
+      //trasactions
+      {
+        plugin: require("./transactions/plugin"),
+        options: optionsCommonPlugins,
+      },
+      // bets
+      {
+        plugin: require("./bets/plugin"),
+        options: optionsCommonPlugins,
+      },
       //users
       {
         plugin: require("./users/plugin"),
@@ -76,11 +86,7 @@ const bootstrap = async function () {
       },
     });
     await server.register([...appPluginsModule], registerOptions);
-    // server.auth.default(JWT_STRATEGY);
-    // server.ext("onPreResponse", function (request: any, h) {
-    //   request?.response?.header("x-request-id", uuidv4());
-    //   return h.continue;
-    // });
+
     await server.start();
     console.log("Server running on port:" + port);
   } catch (err) {

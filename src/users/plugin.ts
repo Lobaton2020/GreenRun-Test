@@ -5,28 +5,31 @@ import { OptionsUsersPlugin } from "./models/usersModuleHapi";
 import { JWT_STRATEGY } from "../index";
 import { adminAccessMiddleware } from "../common/middlewares/roleAccessMiddlewares";
 import idValidator from "../common/validators/id.validator";
+import { ExceptionDecorator } from "../common/decorators/exception.decorator";
 
 const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
   const repository = new UserRepository(options.connection);
   const Controller = new UserController(repository);
-
+  const security = {
+    auth: {
+      strategy: JWT_STRATEGY,
+    },
+    pre: [
+      {
+        method: adminAccessMiddleware,
+      },
+    ],
+  };
   const routes: Hapi.ServerRoute[] = [
     {
       path: "/users/admin/block/{id}",
       method: "PATCH",
       options: {
-        handler: Controller.block.bind(Controller),
-        tags: ["api"],
+        handler: ExceptionDecorator(Controller.block.bind(Controller)),
+        tags: ["api", "users"],
         description:
           "This allw to the ADMIN rol block another user, diretent of ADMIN",
-        auth: {
-          strategy: JWT_STRATEGY,
-        },
-        pre: [
-          {
-            method: adminAccessMiddleware,
-          },
-        ],
+        ...security,
         validate: {
           params: idValidator,
         },
@@ -36,16 +39,8 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       path: "/users",
       method: "GET",
       options: {
-        handler: Controller.findAll.bind(Controller),
-
-        auth: {
-          strategy: JWT_STRATEGY,
-        },
-        pre: [
-          {
-            method: adminAccessMiddleware,
-          },
-        ],
+        handler: ExceptionDecorator(Controller.findAll.bind(Controller)),
+        ...security,
       },
     },
   ];

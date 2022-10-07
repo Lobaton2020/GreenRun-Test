@@ -37,10 +37,10 @@ export enum UserBetState {
   SETTLED = "SETTLED",
 }
 
-const addDateCommonColumns = (table: Knex.CreateTableBuilder): void => {
+export const addDateCommonColumns = (table: Knex.CreateTableBuilder): void => {
   table.datetime("created_at");
   table.datetime("updated_at");
-  table.boolean("deleted");
+  table.boolean("deleted").defaultTo(false);
   table.datetime("deleted_at");
 };
 
@@ -51,7 +51,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("first_name");
     table.string("last_name");
     table.string("phone", 50);
-    table.string("email", 200);
+    table.string("email", 200).unique();
     table.string("username", 200);
     table.string("address", 200);
     table.enum("gender", Object.values(UserGender));

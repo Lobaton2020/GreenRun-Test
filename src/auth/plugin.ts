@@ -17,7 +17,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       method: "POST",
       options: {
         handler: ExceptionDecorator(Controller.registerAdmin.bind(Controller)),
-        tags: ["api"],
+        tags: ["api", "auth"],
         description:
           "The register of the admin role user is done using this endpoint",
         validate: {
@@ -34,7 +34,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       method: "POST",
       options: {
         handler: ExceptionDecorator(Controller.registerUser.bind(Controller)),
-        tags: ["api"],
+        tags: ["api", "auth"],
         description:
           "The register of the user role user is done using this endpoint",
         validate: {
@@ -51,7 +51,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       method: "POST",
       options: {
         handler: ExceptionDecorator(Controller.login.bind(Controller)),
-        tags: ["api"],
+        tags: ["api", "auth"],
         description: "The user will be logged trhought this endpoint",
         validate: {
           payload: loginValidator,
