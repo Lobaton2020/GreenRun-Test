@@ -15,6 +15,7 @@ import {
 } from "./validators/createDeposit.validator";
 import { validationErrorMiddleware } from "../common/middlewares/validationErrorMiddleware";
 import { ExceptionDecorator } from "../common/decorators/exception.decorator";
+import { queryCategoryTransaction } from "./validators/queryCategoryTransaction.validator";
 
 const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
   const repository = new TransactionsRepository(options.connection);
@@ -56,7 +57,26 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
         handler: ExceptionDecorator(Controller.findAll.bind(Controller)),
         tags: ["api", "users"],
         description: "This allow Get all the transactions",
+        validate: {
+          query: queryCategoryTransaction,
+          failAction: validationErrorMiddleware,
+        },
         ...securityUserAndAdmin,
+      },
+    },
+    {
+      path: "/transactions/{id}",
+      method: "GET",
+      options: {
+        handler: ExceptionDecorator(Controller.findOne.bind(Controller)),
+        tags: ["api", "users"],
+        description: "This allow Get all the transactions",
+        validate: {
+          query: queryCategoryTransaction,
+          params: idValidator,
+          failAction: validationErrorMiddleware,
+        },
+        ...securityAdmin,
       },
     },
     {

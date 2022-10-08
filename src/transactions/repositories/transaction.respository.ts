@@ -5,11 +5,13 @@ import { Transaction, TransactionEntity } from "../models/transaction.model";
 export class TransactionsRepository {
   private tableName: string = "transactions";
   constructor(private knex: Knex) {}
-  async findAll() {
-    return this.knex<Transaction[]>(this.tableName).select("*");
+  async findAll(where: object = {}) {
+    return this.knex<Transaction[]>(this.tableName).select("*").where(where);
   }
-  async findAllByUser(userId: number) {
-    return this.knex(this.tableName).where({ user_id: userId }).select("*");
+  async findAllByUser(userId: number, where: object = {}) {
+    return this.knex(this.tableName)
+      .where({ user_id: userId, ...where })
+      .select("*");
   }
 
   async create(payload: TransactionEntity) {

@@ -5,20 +5,15 @@ import {
 import Joi from "joi";
 
 export default Joi.object({
-  password: Joi.string().required(),
-  first_name: Joi.string().required(),
+  first_name: Joi.string(),
   last_name: Joi.string(),
   phone: Joi.string(),
-  email: Joi.string().required().email(),
-  username: Joi.string().required(),
+  email: Joi.string().email(),
+  username: Joi.string(),
   address: Joi.string(),
   gender: Joi.string().valid(...Object.values(UserGender)),
   birth_date: Joi.date(),
   country_id: Joi.number(),
   city: Joi.string(),
-  user_state: Joi.string()
-    .valid(...Object.values(UserState))
-    .default(UserState.ACTIVE),
   category: Joi.string(),
-  created_at: Joi.date().default(new Date()),
 }).options({ allowUnknown: false });

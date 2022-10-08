@@ -3,33 +3,59 @@ import { UserController } from "./controllers/user.controller";
 import { UserRepository } from "./repository/user.repository";
 import { OptionsUsersPlugin } from "./models/usersModuleHapi";
 import { JWT_STRATEGY } from "../index";
-import { adminAccessMiddleware } from "../common/middlewares/roleAccessMiddlewares";
+import {
+  adminAccessMiddleware,
+  userAccessMiddleware,
+  UserAndAdminAcccessMiddleware,
+} from "../common/middlewares/roleAccessMiddlewares";
 import idValidator from "../common/validators/id.validator";
 import { ExceptionDecorator } from "../common/decorators/exception.decorator";
+import registerValidator from "../auth/validators/register.validator";
+import updateUserValidator from "./validators/updateUser.validator";
+import { validationErrorMiddleware } from "../common/middlewares/validationErrorMiddleware";
 
 const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
   const repository = new UserRepository(options.connection);
   const Controller = new UserController(repository);
-  const security = {
+  const securityStrategy = {
     auth: {
       strategy: JWT_STRATEGY,
     },
+  };
+  const securityAdmin = {
+    ...securityStrategy,
     pre: [
       {
         method: adminAccessMiddleware,
       },
     ],
   };
+  const securityUser = {
+    ...securityStrategy,
+    pre: [
+      {
+        method: userAccessMiddleware,
+      },
+    ],
+  };
+  const securityUserAndAdmin = {
+    ...securityStrategy,
+    pre: [
+      {
+        method: UserAndAdminAcccessMiddleware,
+      },
+    ],
+  };
   const routes: Hapi.ServerRoute[] = [
     {
-      path: "/users/admin/block/{id}",
+      path: "/users/block/{id}",
       method: "PATCH",
       options: {
         handler: ExceptionDecorator(Controller.block.bind(Controller)),
         tags: ["api", "users"],
         description:
-          "This allw to the ADMIN rol block another user, diretent of ADMIN",
-        ...security,
+          "This allow to the ADMIN rol block another user, diretent of ADMIN",
+        ...securityAdmin,
         validate: {
           params: idValidator,
         },
@@ -40,7 +66,36 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       method: "GET",
       options: {
         handler: ExceptionDecorator(Controller.findAll.bind(Controller)),
-        ...security,
+        ...securityAdmin,
+      },
+    },
+    {
+      path: "/users/{id}",
+      method: "PUT",
+      options: {
+        handler: ExceptionDecorator(Controller.update.bind(Controller)),
+        tags: ["api", "users"],
+        description: "This allow to the ADMIN  update data of one user",
+        ...securityAdmin,
+        validate: {
+          payload: updateUserValidator,
+          params: idValidator,
+          failAction: validationErrorMiddleware,
+        },
+      },
+    },
+    {
+      path: "/users/profile",
+      method: "PUT",
+      options: {
+        handler: ExceptionDecorator(Controller.updateProfile.bind(Controller)),
+        tags: ["api", "users"],
+        description: "This allow to the ADMIN  update data of one user",
+        ...securityUserAndAdmin,
+        validate: {
+          payload: updateUserValidator,
+          failAction: validationErrorMiddleware,
+        },
       },
     },
   ];

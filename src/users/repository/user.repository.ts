@@ -9,10 +9,12 @@ export class UserRepository {
     return this.knex<UserEntity>(this.tableName).select("*");
   }
   async findOneWitoutPassword(id: number) {
-    const { password: _, ...rest }: User = await this.knex(this.tableName)
-      .where({ id })
-      .first();
-    return { ...rest };
+    const user: User = await this.knex(this.tableName).where({ id }).first();
+    if (!user) {
+      return user;
+    }
+    const { password: _, ...rest } = user;
+    return { ...rest } as User;
   }
   async create(payload: UserEntity) {
      const id = (await this.knex

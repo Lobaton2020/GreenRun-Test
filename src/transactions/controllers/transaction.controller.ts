@@ -6,14 +6,21 @@ import {
 import { Transaction, TransactionEntity } from "../models/transaction.model";
 import { TransactionsRepository } from "../repositories/transaction.respository";
 import * as Boom from "@hapi/boom";
+import { ALL_DEFAULT } from "../validators/queryCategoryTransaction.validator";
 export class TransactionController {
   constructor(readonly transactionRepository: TransactionsRepository) {}
-  //TODO: the filter by category
+  // Depends of the user ROl to show the information
   findAll(req: HapiRequest) {
-    if (req["user"].role.includes(UserRole.ADMIN)) {
-      return this.transactionRepository.findAll();
+    const where = this.getWhereCategoryQuery(req.query);
+    if (req["user"].role.includes(UserRole.USER)) {
+      return this.transactionRepository.findAllByUser(req["user"].sub, where);
     }
-    return this.transactionRepository.findAllByUser(req["user"].sub);
+    return this.transactionRepository.findAll(where);
+  }
+
+  findOne(req: HapiRequest) {
+    const where = this.getWhereCategoryQuery(req.query);
+    return this.transactionRepository.findAllByUser(req.params.id, where);
   }
 
   createDeposit(req: HapiRequest) {
@@ -61,5 +68,13 @@ export class TransactionController {
       0
     );
     return totalDeposit - totalWithdraw > amount;
+  }
+  private getWhereCategoryQuery(query: any) {
+    const category = query?.category;
+    let where: object = {};
+    if (category != ALL_DEFAULT) {
+      where["category"] = category;
+    }
+    return where;
   }
 }
