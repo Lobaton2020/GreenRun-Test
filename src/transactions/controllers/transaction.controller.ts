@@ -42,33 +42,17 @@ export class TransactionController {
       created_at: new Date(),
       status: true,
     };
-    if (!(await this.isAvailableDoeWithdraw(payload.amount, req["user"].sub))) {
+    if (
+      !(await this.transactionRepository.isAvailableDoWithdrawOrBet(
+        payload.amount,
+        req["user"].sub
+      ))
+    ) {
       return Boom.badRequest("The amount is not available to withdraw");
     }
     return this.transactionRepository.create(payload);
   }
-  // Instead add this method there we can add a new layer called Service, If the login growth a lot' I'll do it
-  private async isAvailableDoeWithdraw(amount: number, userId: number) {
-    const transactionDepositList: Transaction[] =
-      await this.transactionRepository.findAllActiveByCategory(
-        userId,
-        TransactionCategory.DEPOSIT
-      );
-    const transactionWithdraWList: Transaction[] =
-      await this.transactionRepository.findAllActiveByCategory(
-        userId,
-        TransactionCategory.WITHDRAW
-      );
-    const totalDeposit = transactionDepositList.reduce(
-      (acc, curr) => acc + curr.amount,
-      0
-    );
-    const totalWithdraw = transactionWithdraWList.reduce(
-      (acc, curr) => acc + curr.amount,
-      0
-    );
-    return totalDeposit - totalWithdraw > amount;
-  }
+
   private getWhereCategoryQuery(query: any) {
     const category = query?.category;
     let where: object = {};

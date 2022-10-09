@@ -17,10 +17,7 @@ export class UserRepository {
     return { ...rest } as User;
   }
   async create(payload: UserEntity) {
-     const id = (await this.knex
-       .insert(payload)
-       .into(this.tableName)
-       .first()) as number;
+     const [id] = await this.knex.insert(payload).into(this.tableName);
      return this.findOneWitoutPassword(id);
 
   }

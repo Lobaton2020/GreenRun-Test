@@ -30,4 +30,21 @@ export class TransactionsRepository {
       }) // here in the future we need add the option deleted to do the validation
       .select("*");
   }
+
+  // Instead add this method there we can add a new layer called Service, If the login growth a lot' I'll do it
+  async isAvailableDoWithdrawOrBet(amount: number, userId: number) {
+    const transactionDepositList: Transaction[] =
+      await this.findAllActiveByCategory(userId, TransactionCategory.DEPOSIT);
+    const transactionWithdraWList: Transaction[] =
+      await this.findAllActiveByCategory(userId, TransactionCategory.WITHDRAW);
+    const totalDeposit = transactionDepositList.reduce(
+      (acc, curr) => acc + curr.amount,
+      0
+    );
+    const totalWithdraw = transactionWithdraWList.reduce(
+      (acc, curr) => acc + curr.amount,
+      0
+    );
+    return totalDeposit - totalWithdraw > amount;
+  }
 }

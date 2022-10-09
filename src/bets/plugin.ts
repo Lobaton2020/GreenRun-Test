@@ -6,21 +6,50 @@ import { SportRepository } from "./repositories/sport.repository";
 import { BetRepository } from "./repositories/bet.repository";
 import { BetController } from "./controllers/bet.controller";
 import { JWT_STRATEGY } from "..";
-import { UserAndAdminAcccessMiddleware } from "../common/middlewares/roleAccessMiddlewares";
+import {
+  adminAccessMiddleware,
+  userAccessMiddleware,
+  UserAndAdminAcccessMiddleware,
+} from "../common/middlewares/roleAccessMiddlewares";
+import { TransactionsRepository } from "../transactions/repositories/transaction.respository";
+import { UserBetRepository } from "./repositories/user-bets.repostitory";
 
 const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
   const betRepository = new BetRepository(options.connection);
   const sportRepository = new SportRepository(options.connection);
   const eventRepository = new EventRepository(options.connection);
+  const userBetRepository = new UserBetRepository(options.connection);
+  const transactionRepository = new TransactionsRepository(options.connection);
   const Controller = new BetController(
     betRepository,
     sportRepository,
-    eventRepository
+    eventRepository,
+    userBetRepository,
+    transactionRepository
   );
-  const security = {
+  const securityStrategy = {
     auth: {
       strategy: JWT_STRATEGY,
     },
+  };
+  const securityAdmin = {
+    ...securityStrategy,
+    pre: [
+      {
+        method: adminAccessMiddleware,
+      },
+    ],
+  };
+  const securityUser = {
+    ...securityStrategy,
+    pre: [
+      {
+        method: userAccessMiddleware,
+      },
+    ],
+  };
+  const securityUserAndAdmin = {
+    ...securityStrategy,
     pre: [
       {
         method: UserAndAdminAcccessMiddleware,
@@ -36,7 +65,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
         tags: ["api", "bets"],
         description:
           "Throw this controller the any user logged in can get the BETS",
-        ...security,
+        ...securityUserAndAdmin,
       },
     },
     {
@@ -47,7 +76,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
         tags: ["api", "bets"],
         description:
           "Throw this controller the any user logged in can get the EVENTS",
-        ...security,
+        ...securityUserAndAdmin,
       },
     },
     {
@@ -58,7 +87,17 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
         tags: ["api", "bets"],
         description:
           "Throw this controller the any user logged in can get the SPORTS",
-        ...security,
+        ...securityUserAndAdmin,
+      },
+    },
+    {
+      path: "/bets",
+      method: "POST",
+      options: {
+        handler: ExceptionDecorator(Controller.place.bind(Controller)),
+        tags: ["api", "bets"],
+        description: "User place a bet",
+        ...securityUser,
       },
     },
   ];
