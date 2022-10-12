@@ -10,7 +10,9 @@ const rolMiddleware = (req: HapiRequest, user: User, userRole: string) => {
   }
   if (!user.role.includes(userRole)) {
     return Boom.unauthorized(
-      "You role " + userRole + " doen't have access to this resource"
+      "Your role " +
+        req.auth.credentials.user.role +
+        " doesn't have access to this resource"
     );
   }
   req.user = user;
@@ -55,7 +57,7 @@ export const UserAndAdminAcccessMiddleware = (
   }
   if (!Object.values(UserRole).some((role) => role.includes(user.role))) {
     return Boom.unauthorized(
-      "You role " + user.role + " doen't have access to this resource"
+      "Your role " + user.role + " doesn't have access to this resource"
     );
   }
   req.user = user;
