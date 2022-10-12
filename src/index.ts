@@ -15,7 +15,12 @@ export const ISS_JWT = "urn:issuer:test";
 const bootstrap = async function () {
   try {
     const port = process.env.PORT || 3000;
-    const server = Hapi.server({ port });
+    const server = Hapi.server({
+      port,
+      routes: {
+        cors: true,
+      },
+    });
     const optionsCommonPlugins: OptionsUsersPlugin = {
       connection: knex(config[(process.env.NODE_ENV ?? "development").trim()]),
     };
