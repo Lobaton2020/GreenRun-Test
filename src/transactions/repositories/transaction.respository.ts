@@ -56,6 +56,7 @@ export class TransactionsRepository {
   async isAvailableDoWithdrawOrBet(amount: number, userId: number) {
     const [_, totalDeposit] = await this.getTotalDeposit(userId);
     const [__, totalWithDraw] = await this.getTotalWithDraw(userId);
-    return totalDeposit - totalWithDraw > amount;
+    const [___, totalBets] = await this.getTotalBet(userId);
+    return totalDeposit - (totalWithDraw + totalBets) > amount;
   }
 }
