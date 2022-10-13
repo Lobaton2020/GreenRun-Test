@@ -65,4 +65,13 @@ export class BetController {
       user_bet,
     };
   }
+
+  async changeStatus(req: HapiRequest) {
+    const betId = req.params.id;
+    if (!(await this.betRepository.findOne(betId))) {
+      return Boom.badRequest("The bet does exist");
+    }
+    await this.betRepository.update(betId, req.payload);
+    return this.betRepository.findOne(betId);
+  }
 }

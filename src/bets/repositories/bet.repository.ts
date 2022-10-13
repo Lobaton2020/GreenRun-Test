@@ -1,8 +1,10 @@
 import { Knex } from "knex";
+import { BaseRepository } from "../../common/repository/base-repository";
 
 export class BetRepository {
   private tableName: string = "bets";
   constructor(private knex: Knex) {}
+
   async findAll(where: object) {
     return this.knex(this.tableName)
       .where(where)
@@ -13,5 +15,9 @@ export class BetRepository {
 
   findOne(id: number | undefined) {
     return this.knex(this.tableName).where({ id }).first();
+  }
+
+  async update(betId: number, payload: { status: string }) {
+    await this.knex.update(payload).where({ id: betId }).into(this.tableName);
   }
 }

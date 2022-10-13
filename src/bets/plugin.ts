@@ -13,6 +13,9 @@ import {
 } from "../common/middlewares/roleAccessMiddlewares";
 import { TransactionsRepository } from "../transactions/repositories/transaction.respository";
 import { UserBetRepository } from "./repositories/user-bets.repostitory";
+import changeStatusValidator from "./validators/changeStatus.validator";
+import idValidator from "../common/validators/id.validator";
+import placeBetValidator from "./validators/placeBet.validator";
 
 const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
   const betRepository = new BetRepository(options.connection);
@@ -98,6 +101,23 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
         tags: ["api", "bets"],
         description: "User place a bet",
         ...securityUser,
+        validate: {
+          payload: placeBetValidator,
+        },
+      },
+    },
+    {
+      path: "/bets/{id}",
+      method: "PATCH",
+      options: {
+        handler: ExceptionDecorator(Controller.changeStatus.bind(Controller)),
+        tags: ["api", "bets"],
+        description: "User place a bet",
+        ...securityAdmin,
+        validate: {
+          payload: changeStatusValidator,
+          params: idValidator,
+        },
       },
     },
   ];
