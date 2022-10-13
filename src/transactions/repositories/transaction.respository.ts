@@ -24,7 +24,6 @@ export class TransactionsRepository {
   findAllActiveByCategory(userId: number, category: string) {
     return this.knex(this.tableName)
       .where({
-        status: true,
         category,
         user_id: userId,
       }) // here in the future we need add the option deleted to do the validation
