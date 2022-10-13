@@ -66,8 +66,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       options: {
         handler: ExceptionDecorator(Controller.findAll.bind(Controller)),
         tags: ["api", "bets"],
-        description:
-          "Throw this controller the any user logged in can get the BETS",
+        description: "This endpoint get all the BETS",
         ...securityUserAndAdmin,
       },
     },
@@ -77,8 +76,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       options: {
         handler: ExceptionDecorator(Controller.findAllEvents.bind(Controller)),
         tags: ["api", "bets"],
-        description:
-          "Throw this controller the any user logged in can get the EVENTS",
+        description: "This endpoint get all the EVENTS previusly created",
         ...securityUserAndAdmin,
       },
     },
@@ -88,8 +86,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       options: {
         handler: ExceptionDecorator(Controller.findAllSports.bind(Controller)),
         tags: ["api", "bets"],
-        description:
-          "Throw this controller the any user logged in can get the SPORTS",
+        description: "This endpoint get all the SPORTS previusly created",
         ...securityUserAndAdmin,
       },
     },
@@ -112,7 +109,8 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       options: {
         handler: ExceptionDecorator(Controller.changeStatus.bind(Controller)),
         tags: ["api", "bets"],
-        description: "User place a bet",
+        description:
+          "This enpoint allows to an ADMIN change the status of a BET",
         ...securityAdmin,
         validate: {
           payload: changeStatusValidator,

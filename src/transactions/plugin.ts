@@ -16,10 +16,12 @@ import {
 import { validationErrorMiddleware } from "../common/middlewares/validationErrorMiddleware";
 import { ExceptionDecorator } from "../common/decorators/exception.decorator";
 import { queryCategoryTransaction } from "./validators/queryCategoryTransaction.validator";
+import { UserRepository } from "../users/repository/user.repository";
 
 const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
   const repository = new TransactionsRepository(options.connection);
-  const Controller = new TransactionController(repository);
+  const userRepository = new UserRepository(options.connection);
+  const Controller = new TransactionController(repository, userRepository);
   const securityStrategy = {
     auth: {
       strategy: JWT_STRATEGY,
@@ -56,7 +58,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       options: {
         handler: ExceptionDecorator(Controller.findAll.bind(Controller)),
         tags: ["api", "users"],
-        description: "This allow Get all the transactions",
+        description: "This endpoint allows the ADMIN get all the transactions",
         validate: {
           query: queryCategoryTransaction,
           failAction: validationErrorMiddleware,
@@ -70,7 +72,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       options: {
         handler: ExceptionDecorator(Controller.findOne.bind(Controller)),
         tags: ["api", "users"],
-        description: "This allow Get all the transactions",
+        description: "This endpoint allows the ADMIN get a transaction by id",
         validate: {
           query: queryCategoryTransaction,
           params: idValidator,
@@ -89,7 +91,8 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
           payload: transactionDepositValidator,
           failAction: validationErrorMiddleware,
         },
-        description: "This allow Get all the transactions",
+        description:
+          "This endpoint allows the USER create a transaction type deposit",
         ...securityUser,
       },
     },
@@ -104,7 +107,38 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
           payload: transactionWithdrawValidator,
           failAction: validationErrorMiddleware,
         },
-        description: "This allow Get all the transactions",
+        description:
+          "This endpoint allows the USER create a transaction type withdraw",
+        ...securityUser,
+      },
+    },
+    {
+      path: "/transactions/balances/users/{id}",
+      method: "GET",
+      options: {
+        handler: ExceptionDecorator(Controller.getUserBalance.bind(Controller)),
+        tags: ["api", "users"],
+        validate: {
+          params: idValidator,
+          failAction: validationErrorMiddleware,
+        },
+        description:
+          "This endpoint allows the ADMIN get the balance of a user by id",
+
+        ...securityAdmin,
+      },
+    },
+    {
+      path: "/transactions/balances/users/me",
+      method: "GET",
+      options: {
+        handler: ExceptionDecorator(Controller.getUserBalance.bind(Controller)),
+        tags: ["api", "users"],
+        validate: {
+          failAction: validationErrorMiddleware,
+        },
+        description: "This endpoint allows the USER get him/her self balance",
+
         ...securityUser,
       },
     },

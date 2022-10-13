@@ -52,7 +52,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       options: {
         handler: ExceptionDecorator(Controller.login.bind(Controller)),
         tags: ["api", "auth"],
-        description: "The user will be logged trhought this endpoint",
+        description: "The user will be logged in with  this endpoint",
         validate: {
           payload: loginValidator,
           failAction: validationErrorMiddleware,

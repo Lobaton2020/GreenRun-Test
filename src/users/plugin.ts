@@ -54,7 +54,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
         handler: ExceptionDecorator(Controller.block.bind(Controller)),
         tags: ["api", "users"],
         description:
-          "This allow to the ADMIN rol block another user, diretent of ADMIN",
+          "This allow to the ADMIN rol block another user, diferent of ADMIN",
         ...securityAdmin,
         validate: {
           params: idValidator,
@@ -75,7 +75,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       options: {
         handler: ExceptionDecorator(Controller.update.bind(Controller)),
         tags: ["api", "users"],
-        description: "This allow to the ADMIN  update data of one user",
+        description: "This allow to the ADMIN update data of one user",
         ...securityAdmin,
         validate: {
           payload: updateUserValidator,

@@ -7,8 +7,12 @@ import { Transaction, TransactionEntity } from "../models/transaction.model";
 import { TransactionsRepository } from "../repositories/transaction.respository";
 import * as Boom from "@hapi/boom";
 import { ALL_DEFAULT } from "../validators/queryCategoryTransaction.validator";
+import { UserRepository } from "../../users/repository/user.repository";
 export class TransactionController {
-  constructor(readonly transactionRepository: TransactionsRepository) {}
+  constructor(
+    readonly transactionRepository: TransactionsRepository,
+    readonly userRepository: UserRepository
+  ) {}
   // Depends of the user ROl to show the information
   findAll(req: HapiRequest) {
     const where = this.getWhereCategoryQuery(req.query);
@@ -52,6 +56,18 @@ export class TransactionController {
     }
     return this.transactionRepository.create(payload);
   }
+  async getUserBalance(req: HapiRequest) {
+    if (req["user"].role.includes(UserRole.USER)) {
+      return this._getUserBalance(req["user"].sub);
+    }
+    if (!(await this.userRepository.findOne(req.params.id))) {
+      return Boom.badRequest("The user by id doesn't exist");
+    }
+    if (req.params.id == req["user"].sub) {
+      return Boom.badRequest("You don't have any balance, you are an ADMIN");
+    }
+    return this._getUserBalance(req.params.id); // The param must be the user id
+  }
 
   private getWhereCategoryQuery(query: any) {
     const category = query?.category;
@@ -60,5 +76,37 @@ export class TransactionController {
       where["category"] = category;
     }
     return where;
+  }
+  private async _getUserBalance(userId: number) {
+    const [
+      [lengthWithDraw, totalWithDraw],
+      [lengthDeposits, totalDeposits],
+      [lengthBets, totalBets],
+      [lengthWinning, totalWinning],
+    ] = await Promise.all([
+      this.transactionRepository.getTotalWithDraw(userId),
+      this.transactionRepository.getTotalDeposit(userId),
+      this.transactionRepository.getTotalBet(userId),
+      this.transactionRepository.getTotalWinning(userId),
+    ]);
+    return {
+      winning: {
+        lengthWinning,
+        totalWinning,
+      },
+      withdraw: {
+        lengthWithDraw,
+        totalWithDraw,
+      },
+      deposit: {
+        lengthDeposits,
+        totalDeposits,
+      },
+      bet: {
+        lengthBets,
+        totalBets,
+      },
+      moneyAvailable: totalDeposits + totalWinning - totalBets + totalWithDraw,
+    };
   }
 }

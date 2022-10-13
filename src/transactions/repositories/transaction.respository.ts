@@ -32,19 +32,30 @@ export class TransactionsRepository {
   }
 
   // Instead add this method there we can add a new layer called Service, If the login growth a lot' I'll do it
+  getTotalDeposit(userId: number): Promise<number[]> {
+    return this.getTotalByCategory(userId, TransactionCategory.DEPOSIT);
+  }
+  getTotalWithDraw(userId: number): Promise<number[]> {
+    return this.getTotalByCategory(userId, TransactionCategory.WITHDRAW);
+  }
+  getTotalBet(userId: number): Promise<number[]> {
+    return this.getTotalByCategory(userId, TransactionCategory.BET);
+  }
+  getTotalWinning(userId: number): Promise<number[]> {
+    return this.getTotalByCategory(userId, TransactionCategory.WINNING);
+  }
+  private async getTotalByCategory(userId: number, category: string) {
+    const transactionCategoryList: Transaction[] =
+      await this.findAllActiveByCategory(userId, category);
+    const total = transactionCategoryList.reduce(
+      (acc, curr) => acc + curr.amount,
+      0
+    );
+    return [transactionCategoryList?.length || 0, total || 0];
+  }
   async isAvailableDoWithdrawOrBet(amount: number, userId: number) {
-    const transactionDepositList: Transaction[] =
-      await this.findAllActiveByCategory(userId, TransactionCategory.DEPOSIT);
-    const transactionWithdraWList: Transaction[] =
-      await this.findAllActiveByCategory(userId, TransactionCategory.WITHDRAW);
-    const totalDeposit = transactionDepositList.reduce(
-      (acc, curr) => acc + curr.amount,
-      0
-    );
-    const totalWithdraw = transactionWithdraWList.reduce(
-      (acc, curr) => acc + curr.amount,
-      0
-    );
-    return totalDeposit - totalWithdraw > amount;
+    const [_, totalDeposit] = await this.getTotalDeposit(userId);
+    const [__, totalWithDraw] = await this.getTotalWithDraw(userId);
+    return totalDeposit - totalWithDraw > amount;
   }
 }

@@ -8,6 +8,7 @@ import knex from "knex";
 import config from "./database/knexfile";
 import { OptionsUsersPlugin } from "./users/models/usersModuleHapi";
 import { v4 as uuidv4 } from "uuid";
+import { HapiRequest } from "./common/middlewares/roleAccessMiddlewares";
 //this will be organized on a differente file
 export const JWT_STRATEGY = "JWT_STRATEGY";
 export const AUD_JWT = "urn:audience:test";
@@ -31,6 +32,7 @@ const bootstrap = async function () {
     };
     const swaggerOptions: HapiSwagger.RegisterOptions = {
       info: {
+        
         title: "Test API HAPI JS",
       },
     };
@@ -67,7 +69,15 @@ const bootstrap = async function () {
         options: optionsCommonPlugins,
       },
     ];
-
+    server.route({
+      path: "/",
+      method: "GET",
+      options: {
+        handler(req: HapiRequest, res: Hapi.ResponseToolkit) {
+          return res.redirect("/api/v1/documentation");
+        },
+      },
+    });
     await server.register(
       {
         plugin: require("@hapi/jwt"),
