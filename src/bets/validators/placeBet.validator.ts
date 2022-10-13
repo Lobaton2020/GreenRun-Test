@@ -5,7 +5,7 @@ export default Joi.object({
   amount: Joi.number().required(),
   odd: Joi.number().required(),
   bet_id: Joi.number().required(),
-  status: Joi.number()
+  state: Joi.number()
     .valid(...Object.values(BetResult))
     .required(),
 }).options({ allowUnknown: false });
