@@ -33,8 +33,8 @@ export enum BetResult {
 
 export enum UserBetState {
   WON = "WON",
+  LOST = "LOST",
   OPEN = "OPEN",
-  SETTLED = "SETTLED",
 }
 
 export const addDateCommonColumns = (table: Knex.CreateTableBuilder): void => {
