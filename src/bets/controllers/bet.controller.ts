@@ -101,7 +101,7 @@ export class BetController {
       const user = (await this.userRepository.findOne(userBet.user_id)) as User;
       let subject = `We are sorry, Yoy haven't wont the bet: ${bet.name}`;
       let message = `This an email of test, Here I would add a beautiful meesage with more detail`;
-      if (userBet.state == req.payload.results) {
+      if (userBet.state == req.payload.result) {
         // Verifuy if the user have won
         const payloadTransaction = {
           amount: userBet.amount * userBet.odd - userBet.amount, //calcular
