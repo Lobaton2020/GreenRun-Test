@@ -8,6 +8,7 @@ import knex from "knex";
 import config from "./database/knexfile";
 import { OptionsUsersPlugin } from "./users/models/usersModuleHapi";
 import { v4 as uuidv4 } from "uuid";
+import path from "path";
 import { HapiRequest } from "./common/middlewares/roleAccessMiddlewares";
 //this will be organized on a differente file
 export const JWT_STRATEGY = "JWT_STRATEGY";
@@ -19,6 +20,9 @@ const bootstrap = async function () {
     const server = Hapi.server({
       port,
       routes: {
+        files: {
+          relativeTo: path.join(__dirname, "../docs"),
+        },
         cors: true,
       },
     });
@@ -32,9 +36,21 @@ const bootstrap = async function () {
     };
     const swaggerOptions: HapiSwagger.RegisterOptions = {
       info: {
-        
         title: "Test API HAPI JS",
+        description: `This is the api to fix the requierements you can access <a href="/public/GreenRun - Backend Developer Test.pdf">Here</a> <br> You can access to the Model Relational Diagram <a href="/public/MER.png">Here</a>
+          <h4>** ALERT: When you got the token and you are going to add in swagger please add the prefix Bearer</h4>`,
       },
+      sortEndpoints: "ordered",
+      grouping: "tags",
+      securityDefinitions: {
+        JWT: {
+          type: "apiKey",
+          name: "Authorization",
+          in: "header",
+          keyPrefix: "Bearer ",
+        },
+      },
+      security: [{ JWT: [] }],
     };
     const appPluginsModule: Hapi.ServerRegisterPluginObject<any>[] = [
       //swagger generator
@@ -69,21 +85,15 @@ const bootstrap = async function () {
         options: optionsCommonPlugins,
       },
     ];
-    server.route({
-      path: "/",
-      method: "GET",
-      options: {
-        handler(req: HapiRequest, res: Hapi.ResponseToolkit) {
-          return res.redirect("/api/v1/documentation");
-        },
-      },
-    });
+    // default routes to ser static files and documentation
+
     await server.register(
       {
         plugin: require("@hapi/jwt"),
       },
       registerOptions
     );
+
     server.auth.strategy(JWT_STRATEGY, "jwt", {
       keys: process.env.JWT_SECRET_KEY,
       verify: {
@@ -101,7 +111,28 @@ const bootstrap = async function () {
       },
     });
     await server.register([...appPluginsModule], registerOptions);
-
+    //redirect to tht docs
+    server.route({
+      path: "/",
+      method: "GET",
+      options: {
+        handler(req: HapiRequest, res: Hapi.ResponseToolkit) {
+          return res.redirect("/api/v1/documentation");
+        },
+      },
+    });
+    //serlve files statics
+    server.route({
+      path: "/public/{param*}",
+      method: "GET",
+      handler: {
+        directory: {
+          path: "../docs",
+          redirectToSlash: true,
+          index: true,
+        },
+      },
+    });
     await server.start();
     console.log("Server running on port:" + port);
   } catch (err) {

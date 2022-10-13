@@ -57,7 +57,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       method: "GET",
       options: {
         handler: ExceptionDecorator(Controller.findAll.bind(Controller)),
-        tags: ["api", "users"],
+        tags: ["api", "transactions"],
         description: "This endpoint allows the ADMIN get all the transactions",
         validate: {
           query: queryCategoryTransaction,
@@ -71,7 +71,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       method: "GET",
       options: {
         handler: ExceptionDecorator(Controller.findOne.bind(Controller)),
-        tags: ["api", "users"],
+        tags: ["api", "transactions"],
         description: "This endpoint allows the ADMIN get a transaction by id",
         validate: {
           query: queryCategoryTransaction,
@@ -86,7 +86,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       method: "POST",
       options: {
         handler: ExceptionDecorator(Controller.createDeposit.bind(Controller)),
-        tags: ["api", "users"],
+        tags: ["api", "transactions"],
         validate: {
           payload: transactionDepositValidator,
           failAction: validationErrorMiddleware,
@@ -102,7 +102,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       method: "POST",
       options: {
         handler: ExceptionDecorator(Controller.createWithdraw.bind(Controller)),
-        tags: ["api", "users"],
+        tags: ["api", "transactions"],
         validate: {
           payload: transactionWithdrawValidator,
           failAction: validationErrorMiddleware,
@@ -117,7 +117,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       method: "GET",
       options: {
         handler: ExceptionDecorator(Controller.getUserBalance.bind(Controller)),
-        tags: ["api", "users"],
+        tags: ["api", "transactions"],
         validate: {
           params: idValidator,
           failAction: validationErrorMiddleware,
@@ -133,7 +133,7 @@ const register = (server: Hapi.Server, options: OptionsUsersPlugin) => {
       method: "GET",
       options: {
         handler: ExceptionDecorator(Controller.getUserBalance.bind(Controller)),
-        tags: ["api", "users"],
+        tags: ["api", "transactions"],
         validate: {
           failAction: validationErrorMiddleware,
         },
