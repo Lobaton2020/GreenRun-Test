@@ -1,0 +1,710 @@
+{
+	"info": {
+		"_postman_id": "dbd24ea6-de35-4dee-9d17-6c23dccd17f7",
+		"name": "Test-HapiJs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11339152"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "register/admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"first_name\":\"Andres\",\r\n    \"last_name\":\"Lobaton\",\r\n    \"username\":\"Lobaton2020\",\r\n    \"email\":\"andres@gmail.com\",\r\n    \"password\":\"Luna21\",\r\n    \"gender\":\"MALE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{urlBaseApp}}auth/register/admin",
+							"host": [
+								"{{urlBaseApp}}auth"
+							],
+							"path": [
+								"register",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register/user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"first_name\":\"Ivan Test\",\r\n    \"last_name\":\"asas\",\r\n    \"username\":\"juanporras\",\r\n    \"email\":\"ivanlobatonv@gmail.com\",\r\n    \"password\":\"Luna21\",\r\n    \"gender\":\"MALE\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{urlBaseApp}}auth/register/user",
+							"host": [
+								"{{urlBaseApp}}auth"
+							],
+							"path": [
+								"register",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// const postRequest = {\r",
+									"//   url: \"http://localhost:3001/api/v1/auth/login\",\r",
+									"//   method: 'POST',\r",
+									"//   header: {\r",
+									"//     \"Content-Type\": \"application/json\"\r",
+									"//   },\r",
+									"//   body: {\r",
+									"//         \"email\": \"andres@gmail.com\",\r",
+									"//         \"password\":\"Luna21\"\r",
+									"//     }\r",
+									"// };\r",
+									"// console.log( pm.environment.get(\"urlBaseApp\")+\"auth/login\")\r",
+									"// pm.sendRequest(postRequest, function (err, res) {\r",
+									"//     var responseJson = res.json();\r",
+									"//     console.log(responseJson)\r",
+									"//     pm.environment.set('TokenBearer', responseJson['accessToken']);\r",
+									"// });"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = JSON.parse(responseBody)\r",
+									"pm.environment.set('TokenBearer', responseJson['accessToken']);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "cors",
+								"value": "no-cors",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"andres@gmail.com\",\r\n    \"password\":\"Luna21\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{urlBaseApp}}auth/login",
+							"host": [
+								"{{urlBaseApp}}auth"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{urlBaseApp}}users",
+							"host": [
+								"{{urlBaseApp}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"city\":\"BogotáDC\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{urlBaseApp}}users/11",
+							"host": [
+								"{{urlBaseApp}}users"
+							],
+							"path": [
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "block",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{urlBaseApp}}users/block/2",
+							"host": [
+								"{{urlBaseApp}}users"
+							],
+							"path": [
+								"block",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"first_name\":\"User\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{urlBaseApp}}users/profile",
+							"host": [
+								"{{urlBaseApp}}users"
+							],
+							"path": [
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "bets",
+			"item": [
+				{
+					"name": "events",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{urlBaseApp}}bets/events",
+							"host": [
+								"{{urlBaseApp}}bets"
+							],
+							"path": [
+								"events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sports",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{urlBaseApp}}bets/sports",
+							"host": [
+								"{{urlBaseApp}}bets"
+							],
+							"path": [
+								"sports"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{urlBaseApp}}bets",
+							"host": [
+								"{{urlBaseApp}}bets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/placed",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{urlBaseApp}}bets/placed",
+							"host": [
+								"{{urlBaseApp}}bets"
+							],
+							"path": [
+								"placed"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/place",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\":1000,\r\n    \"odd\":2,\r\n    \"bet_id\":73,\r\n    \"status\":\"LOST\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{urlBaseApp}}bets/place",
+							"host": [
+								"{{urlBaseApp}}bets"
+							],
+							"path": [
+								"place"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/results/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"result\":\"WON\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{urlBaseApp}}bets/results/73",
+							"host": [
+								"{{urlBaseApp}}bets"
+							],
+							"path": [
+								"results",
+								"73"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\":\"CANCELED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{urlBaseApp}}bets/73",
+							"host": [
+								"{{urlBaseApp}}bets"
+							],
+							"path": [
+								"73"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "transactions",
+			"item": [
+				{
+					"name": "/",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{urlBaseApp}}transactions",
+							"host": [
+								"{{urlBaseApp}}transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{urlBaseApp}}transactions/11?category=WITHDRAW",
+							"host": [
+								"{{urlBaseApp}}transactions"
+							],
+							"path": [
+								"11"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "WITHDRAW"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/deposit",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\":2000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{urlBaseApp}}transactions/deposit",
+							"host": [
+								"{{urlBaseApp}}transactions"
+							],
+							"path": [
+								"deposit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/withdraw",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\":10000000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{urlBaseApp}}transactions/withdraw",
+							"host": [
+								"{{urlBaseApp}}transactions"
+							],
+							"path": [
+								"withdraw"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/balances/users/me",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{urlBaseApp}}transactions/balances/users/me",
+							"host": [
+								"{{urlBaseApp}}transactions"
+							],
+							"path": [
+								"balances",
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/balances/users/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TokenBearer}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{urlBaseApp}}transactions/balances/users/6",
+							"host": [
+								"{{urlBaseApp}}transactions"
+							],
+							"path": [
+								"balances",
+								"users",
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "urlBaseApp",
+			"value": "http://localhost:3001/api/v1/"
+		},
+		{
+			"key": "te",
+			"value": "https://green-run.herokuapp.com/api/v1/",
+			"type": "string"
+		}
+	]
+}
